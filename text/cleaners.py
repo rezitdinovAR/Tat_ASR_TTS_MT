@@ -111,10 +111,10 @@ def bengali_cleaners(text):
     text = phonemize(text, backend="espeak", language="bn", strip=True, preserve_punctuation=True, with_stress=True, njobs=8)
     # text = collapse_whitespace(text)
     return text
-
+#Added lower and collapse
 def tatar_cleaners(text):
     """Pipeline for tatar text, including lowercase + punctuation + stress"""
-   # text = lowercase(text)
+    text = lowercase(text)
     text = phonemize(text, backend="espeak", language="tt", strip=True, preserve_punctuation=True, with_stress=True, njobs=4)
-    #text = collapse_whitespace(text)
+    text = collapse_whitespace(text)
     return text

@@ -32,12 +32,12 @@ global_step = 0
 
 def main():
     """Assume Single Node Multi GPUs Training Only"""
-    os.environ['CUDA_VISIBLE_DEVICES']='0,2,3,4,5,6,7'
+    os.environ['CUDA_VISIBLE_DEVICES']='4,5,6,7'
     assert torch.cuda.is_available(), "CPU training is not allowed."
 
     n_gpus = torch.cuda.device_count()
     os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "8009"
+    os.environ["MASTER_PORT"] = "8007"
 
     hps = utils.get_hparams()
     mp.spawn(
@@ -165,6 +165,7 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler, loade
 
         if rank == 0:
             if global_step % hps.train.log_interval == 0:
+                print(global_step)
                 lr = optim_g.param_groups[0]["lr"]
                 losses = [loss_disc, loss_gen, loss_fm, loss_mel, loss_dur, loss_kl]
                 logger.info("Train Epoch: {} [{:.0f}%]".format(epoch, 100.0 * batch_idx / len(train_loader)))
@@ -188,8 +189,8 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler, loade
                 evaluate(hps, net_g, eval_loader, writer_eval)
                 utils.save_checkpoint(net_g, optim_g, hps.train.learning_rate, epoch, os.path.join(hps.model_dir, "G_{}.pth".format(global_step)))
                 utils.save_checkpoint(net_d, optim_d, hps.train.learning_rate, epoch, os.path.join(hps.model_dir, "D_{}.pth".format(global_step)))
-                os.system('rm /home/ips/projects/tatar-tts-2/VITS/vits/logs/multispeaker/G_{}.pth'.format(global_step-15000))
-                os.system('rm /home/ips/projects/tatar-tts-2/VITS/vits/logs/multispeaker/D_{}.pth'.format(global_step-15000))
+               # os.system('rm /home/ips/projects/tatar-tts-2/VITS/vits/logs/Almaz_Alsu/G_{}.pth'.format(global_step-10000))
+               # os.system('rm /home/ips/projects/tatar-tts-2/VITS/vits/logs/Almaz_Alsu/D_{}.pth'.format(global_step-10000))
         global_step += 1
 
     if rank == 0:

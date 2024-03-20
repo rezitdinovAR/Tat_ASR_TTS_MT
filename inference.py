@@ -32,7 +32,7 @@ def get_text(text, hps):
 
 os.environ['CUDA_VISIBLE_DEVICES']='7'
 
-hps = utils.get_hparams_from_file("./configs/multispeaker.json")
+hps = utils.get_hparams_from_file("./configs/Almaz_Alsu_base.json")
 
 net_g = SynthesizerTrn(
     len(symbols),
@@ -42,7 +42,7 @@ net_g = SynthesizerTrn(
     **hps.model).cuda()
 _ = net_g.eval()
 
-check_point = "./logs/multispeaker/G_80000.pth"
+check_point = "./logs/Almaz_Alsu/G_1225000.pth"
 
 _ = utils.load_checkpoint(check_point, net_g, None)
 
@@ -60,11 +60,10 @@ text ="Татарстан Рәисе шулай ук Төркия Республ
 "Татарстан Рәисе Рөстәм Миңнеханов Мәскәү өлкәсенә эш сәфәре кысаларында «Гринвуд» бизнес-паркында булды һәм Кытайның эшлекле даирәләре вәкилләре белән очрашты. «Гринвуд» бизнес-паркы 2010 елда Кытай капиталы катнашында төзелгән. Россия һәм КХР арасында икътисадый һәм гуманитар хезмәттәшлек өчен платформа булып тора. Инфраструктура үз эченә кунакханә, конгресс-үзәк, сөйләшүләр бүләмәләре, банк бүлекчәләре һәм башка күп нәрсәләрне ала. Бизнес-парк территориясендә 12 мең хезмәткәр эшли. Мәйданчыкта 300дән артык төрле компаниянең штаб-фатирлары һәм офислары тәкъдим ителгән, алар арасында 170 Кытай компаниясе. Бизнес-парк резидентларының Россия һәм Кытай арасындагы гомуми товар әйләнешенә керткән гомуми өлеше 6 млрд доллар тәшкил итә."
 
 stn_tst = get_text(text, hps)
-print('here')
 with torch.no_grad():
     x_tst = stn_tst.cuda().unsqueeze(0)
     x_tst_lengths = torch.LongTensor([stn_tst.size(0)]).cuda()
     sid = torch.LongTensor([0]).cuda()
-    audio = net_g.infer(x_tst, x_tst_lengths, sid=sid, noise_scale=.667, noise_scale_w=0.8, length_scale=1)[0][0,0].data.cpu().float().numpy()
+    audio = net_g.infer(x_tst, x_tst_lengths, sid=sid, noise_scale=.667, noise_scale_w=1, length_scale=1)[0][0,0].data.cpu().float().numpy()
 ipd.display(ipd.Audio(audio, rate=hps.data.sampling_rate, normalize=False))
-sf.write('out/'+text[:5]+'_'+check_point[check_point.rfind('/')+1:check_point.rfind('.')]+'.wav', audio, hps.data.sampling_rate)
+sf.write('out/'+text[:5]+'_'+check_point[check_point.rfind('/')+1:check_point.rfind('.')]+'_Alm.wav', audio, hps.data.sampling_rate)

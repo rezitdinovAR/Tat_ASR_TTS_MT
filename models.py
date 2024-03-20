@@ -47,7 +47,7 @@ class StochasticDurationPredictor(nn.Module):
         if gin_channels != 0:
             self.cond = nn.Conv1d(gin_channels, filter_channels, 1)
 
-    def forward(self, x, x_mask, w=None, g=None, reverse=False, noise_scale=1.0):
+    def forward(self, x, x_mask, w=None, g=None, reverse=False, noise_scale=0.667):
         x = torch.detach(x)
         x = self.pre(x)
         if g is not None:
@@ -462,7 +462,7 @@ class SynthesizerTrn(nn.Module):
         o = self.dec(z_slice, g=g)
         return o, l_length, attn, ids_slice, x_mask, y_mask, (z, z_p, m_p, logs_p, m_q, logs_q)
 
-    def infer(self, x, x_lengths, sid=None, noise_scale=1, length_scale=1, noise_scale_w=1.0, max_len=None):
+    def infer(self, x, x_lengths, sid=None, noise_scale=1, length_scale=1, noise_scale_w=0.667, max_len=None):
         x, m_p, logs_p, x_mask = self.enc_p(x, x_lengths)
         if self.n_speakers > 0:
             g = self.emb_g(sid).unsqueeze(-1)  # [b, h, 1]
